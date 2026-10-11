@@ -19,7 +19,7 @@ const ProductCard = ({img, title, price, description,onAddToCart,inStock}) => {
         <h2>{title}</h2>
         <p>{description}</p>
         <h3>{price}</h3>
-        {inStock ? (<button onClick={onAddToCart}>Add To Cart</button>):(<button disabled>Out of Stock</button>)}
+        {inStock ? (<button onClick={(()=>{onAddToCart({title,price,img})})}>Add To Cart</button>):(<button disabled>Out of Stock</button>)}
         
         
     </div>

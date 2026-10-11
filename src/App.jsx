@@ -1,12 +1,16 @@
 import "./App.css";
 import Modal from "./components/Modal";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 import ProductCard from "./components/ProductCard";
 import { useState, useEffect } from "react";
 import { ThemeContext } from "./ThemeContext";
+import About from "./Pages/About";
+import useCart from './Hooks/useCart'
 
 function App() {
-  const [cartCount, setCartCount] = useState([]);
+  const {cartCount, handleAddToCart,handleRemoveFromCart} = useCart()
+ 
   const [products, setProducts] = useState([]);
   const [searchItem, setSearchItem] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -924,11 +928,12 @@ function App() {
 
     return () => clearTimeout(timerId);
   }, []);
+ 
+  
 
-  function handleAddToCart(item) {
-    // setCartCount((prev) => prev + 1);
-    setCartCount((prev)=>[...prev,item]);
-  }
+  
+
+  
 
   function toggleTheme() {
     setTheme(theme === "light" ? "dark" : "light");
@@ -948,6 +953,7 @@ function App() {
 
   return (
     <ThemeContext.Provider value={theme}>
+      <BrowserRouter>
       <div
         style={{
           minHeight: "100vh",
@@ -957,6 +963,10 @@ function App() {
         }}
       >
         <header>
+          <nav style={{marginBottom:"20px"}}>
+            <Link to="/" style={{marginRight:"15px", color:"inherit"}}>Home</Link>
+            <Link to="/about" style={{ color:"inherit"}}>About Us</Link>
+          </nav>
           <h1>My Tech Store</h1>
           <button onClick={toggleTheme}>
             Switch to {theme === "light" ? "Dark" : "Light"} Mode
@@ -965,35 +975,47 @@ function App() {
             View Cart ({cartCount.length})
           </button>
         </header>
-
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchItem}
-          onChange={(e) => setSearchItem(e.target.value)}
-        />
-
-        {products.length === 0 ? (
-          <p>Loading products...</p>
-        ) : (
-          <div>
-            {products
-              .filter((p) =>
-                p.title.toLowerCase().includes(searchItem.toLowerCase()),
-              )
-              .map((product) => (
-                <ProductCard
-                  key={product.id}
-                  img={product.img}
-                  title={product.title}
-                  price={product.price}
-                  description={product.description}
-                  inStock={product.inStock}
-                  onAddToCart={handleAddToCart}
+                <Routes>
+          <Route
+            path="/"
+            element={
+              <div>
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchItem}
+                  onChange={(e) => setSearchItem(e.target.value)}
                 />
-              ))}
-          </div>
-        )}
+
+                {products.length === 0 ? (
+                  <p>Loading products...</p>
+                ) : (
+                  <div>
+                    {products
+                      .filter((p) =>
+                        p.title.toLowerCase().includes(searchItem.toLowerCase())
+                      )
+                      .map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          img={product.img}
+                          title={product.title}
+                          price={product.price}
+                          description={product.description}
+                          inStock={product.inStock}
+                          onAddToCart={handleAddToCart}
+                        />
+                      ))}
+                  </div>
+                )}
+              </div>
+            }
+          />
+          <Route path="/about" element={<About />} />
+        </Routes>
+
+
+        
         {isModalOpen && (
           <Modal onClose={() => setIsModalOpen(false)}>
             <h2 style={{ color: "black" }}>Your Shopping Cart</h2>
@@ -1007,8 +1029,15 @@ function App() {
                   <li key={index} style={{marginBottom:"10px"}}>
                     <img src={item.img} alt={item.title} width="30" style={{marginRight:"10px"}}/>
                     {item.title}-{item.price}
+
+                    <button
+                    onClick={()=> handleRemoveFromCart(index)}
+                    style={{marginLeft:"10px",color:"red"}}>
+                      X
+                    </button>
                   </li>
                 ))}
+
               </ul>
               
             )}
@@ -1019,6 +1048,7 @@ function App() {
           </Modal>
         )}
       </div>
+      </BrowserRouter>
     </ThemeContext.Provider>
   );
 }

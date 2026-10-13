@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { ThemeContext } from "./ThemeContext";
 import About from "./Pages/About";
 import useCart from './Hooks/useCart'
+import ProductDetails from "./Pages/ProductDetails";
 
 function App() {
   const {cartCount, handleAddToCart,handleRemoveFromCart} = useCart()
@@ -998,6 +999,7 @@ function App() {
                       .map((product) => (
                         <ProductCard
                           key={product.id}
+                          id={product.id}
                           img={product.img}
                           title={product.title}
                           price={product.price}
@@ -1012,6 +1014,8 @@ function App() {
             }
           />
           <Route path="/about" element={<About />} />
+
+          <Route path="/product/:id" element={<ProductDetails products={products} />}/>
         </Routes>
 
 
